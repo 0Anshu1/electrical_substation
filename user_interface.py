@@ -78,7 +78,7 @@ if uploaded_files:
             st.image(detected_path, caption=f"Detected {i+1}", use_container_width=True)
 
     if st.button("🔍 Generate Report"):
-        with st.spinner("Analyzing images with Gemini..."):
+        with st.spinner("Analyzing images..."):
             # Prepare inspection prompt
             prompt = f"""
             You are an inspection assistant. 
