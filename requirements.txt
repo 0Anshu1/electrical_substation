@@ -1,0 +1,14 @@
+# Core
+streamlit
+python-dotenv
+
+# AI Models / API
+ultralytics
+google-generativeai
+
+# Image Processing
+pillow
+opencv-python-headless
+
+# Utilities
+requests
