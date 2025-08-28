@@ -5,7 +5,13 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 import tempfile
 from PIL import Image
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
 
+# -------------------------------
+# API Key Setup
+# -------------------------------
 api_key = None
 if "GEMINI_API_KEY" in st.secrets:
     api_key = st.secrets["GEMINI_API_KEY"]
@@ -104,12 +110,33 @@ if uploaded_files:
                 st.success("✅ Report generated successfully!")
                 st.markdown(report)
 
-                # Download button
-                st.download_button(
-                    label="📥 Download Report",
-                    data=report,
-                    file_name=f"inspection_report_{datetime.now().strftime('%Y%m%d')}.md",
-                    mime="text/markdown"
-                )
+                # -------------------------------
+                # Convert Report to PDF
+                # -------------------------------
+                pdf_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+                c = canvas.Canvas(pdf_file.name, pagesize=A4)
+                width, height = A4
+
+                # Add title
+                c.setFont("Helvetica-Bold", 14)
+                c.drawString(1 * inch, height - 1 * inch, "Substation Inspection Report")
+
+                # Add report text
+                c.setFont("Helvetica", 10)
+                text_obj = c.beginText(1 * inch, height - 1.5 * inch)
+                for line in report.split("\n"):
+                    text_obj.textLine(line)
+                c.drawText(text_obj)
+                c.save()
+
+                # Download button for PDF
+                with open(pdf_file.name, "rb") as f:
+                    st.download_button(
+                        label="📥 Download Report (PDF)",
+                        data=f,
+                        file_name=f"inspection_report_{datetime.now().strftime('%Y%m%d')}.pdf",
+                        mime="application/pdf"
+                    )
+
             except Exception as e:
                 st.error(f"Error: {e}")
